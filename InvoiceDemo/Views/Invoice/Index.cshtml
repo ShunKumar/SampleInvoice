@@ -1,0 +1,933 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Grubbrr Invoice Details</h2>
+<style>
+    #invoiceTable {
+        width: 100% !important;
+        /*//padding: 10px 0 0 0;*/
+        border: 1px solid black;
+    }
+
+        #invoiceTable th, td {
+            padding: 5px !important;
+        }
+
+    th {
+        background-color: #337ab7 /*#007bff*/;
+        color: white;
+    }
+
+    #invoiceTable tr:nth-child(even) {
+        background: #CCC
+    }
+
+    #invoiceTable tr:nth-child(odd) {
+        background: #FFF
+    }
+
+    .editIcon button {
+        width: 60px !important;
+        padding: 4px;
+    }
+
+    .text_align_right {
+        text-align: right;
+    }
+
+    .text_align_left {
+        text-align: left;
+    }
+
+    select {
+        margin: 50px;
+        width: 240px;
+        padding: 5px 35px 5px 5px;
+        font-size: 16px;
+        border: 1px solid #CCC;
+        border-radius: 6px;
+        height: 34px;
+    }
+
+    .modal-body label {
+        margin: 0;
+        padding: 6px;
+    }
+
+    .modal-body .row {
+        margin-bottom: 10px;
+    }
+
+    .modal-body input {
+        max-width: 240px;
+        text-align: left;
+    }
+
+    .dateTimePickerWidth {
+        max-width: 240px;
+    }
+
+    #invoiceProduct {
+        width: 95%;
+        margin: 0 auto;
+    }
+
+        #invoiceProduct select {
+            width: 200px;
+            font-size: 16px;
+            border: 1px solid #CCC;
+            border-radius: 6px;
+            height: 34px;
+        }
+
+    #invoiceProduct, tr {
+        padding: 5px 0 5px 5px !important;
+        border: 1px solid black;
+    }
+
+    #invoiceProduct, th {
+        padding: 5px 0 5px 5px !important;
+    }
+
+    .modal-lg {
+        min-width: 1000px;
+    }
+
+    .addprodcutbuttondiv {
+        padding: 20px;
+        margin: 0 auto;
+        margin-left:200px !important;
+    }
+
+    .modelfooterbtn {
+        text-align: center !important;
+    }
+
+    .displayflex {
+        display: flex;
+    }
+
+    #invoiceNote {
+        min-width: 450px;
+        min-height: 110px;
+    }
+
+    .floatRight {
+        float: right;
+    }
+
+    .withhundredPercent_rightalign {
+        width: 100%;
+        text-align: right;
+        margin: 5px auto !important;
+        white-space: nowrap;
+    }
+
+    .attachment {
+        margin: 0px 10px;
+    }
+
+    .attachfilediv {
+        text-align: right;
+        margin: 10px;
+    }
+
+    .preview {
+        margin: 10px 15px !important;
+        background: blue;
+        width: 18%;
+        padding: 5px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+        .preview a {
+            color: white;
+        }
+
+            .preview a:hover {
+                color: white;
+            }
+
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        z-index:99999;
+    }
+    /* Safari */
+    @@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .highlight {
+        background: red !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+   
+</style>
+<div class="loader" style="display:none;"></div>
+<div style="width:90%;margin:0 auto;">
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" id="showInVoiceModel" data-target="#addInVoiceModal">Add InVoice</button>
+</div>
+<!-- Modal -->
+<div id="addInVoiceModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3 class="modal-title">Invoice Info</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 text_align_right">
+                        <label>Bill To<span style="color:red;padding: 2px;">*</span>:</label>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <select name="customer" id="cutomerList"></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 text_align_right">
+                        <label>Invoice No<span style="color:red;padding: 2px;">*</span>:</label>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <input type="text" class="form-control" id="invoiceNo" placeholder="Inv-000#">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 text_align_right">
+                        <label>Date:</label>
+                    </div>
+                    <div class="col-sm-6 ">
+                        <div class='input-group date dateTimePickerWidth' id='datetimepicker1'>
+                            <input type='text' class="form-control" id="invoiceDate" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 text_align_right">
+                        <label>Due Date:</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class='input-group date dateTimePickerWidth' id='datetimepicker2'>
+                            <input type='text' class="form-control" id="invoiceDueDate" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 text_align_right">
+                        <label>Status:</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select name="customer" id="statusEnum">
+                            <option value="0" selected>Draft</option>
+                            <option value="1">Sent</option>
+                            <option value="2">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 text_align_left">
+
+                    </div>
+                    <label class="invoice_label">Invoice Details</label>
+                </div>
+                <div class="row">
+                    <table id="invoiceProduct">
+                        <thead>
+                            <tr>
+                                <th style="width:1px;">
+                                    #
+                                </th>
+                                <th>
+                                    Product
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Price
+                                </th>
+                                <th>
+                                    Qty
+                                </th>
+                                <th>
+                                    Tax(%)
+                                </th>
+                                <th>
+                                    Total
+                                </th>
+                                <th>
+
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="addProduct"></tbody>
+
+
+                    </table>
+                </div>
+                <div class="row addprodcutbuttondiv">
+                    <div class="col-sm-offset-10 col-sm-2">
+                        <button type="button" class="btn btn-success btn-md" id="addProductRow">Add Product</button>
+                    </div>
+                </div>
+                <div calss="row">
+                    <div class="col-sm-6">
+                        <div class="displayflex">
+                            <label class="withhundredPercent_rightalign">Invoice Note:</label>
+                            <textarea id="invoiceNote" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="floatRight">
+                            <li class="displayflex">
+                                <label class="withhundredPercent_rightalign">Sub Total:</label><input type="text" class="form-control" id="subTotal" value="0.00" disabled />
+                            </li>
+                            <li class="displayflex">
+                                <label class="withhundredPercent_rightalign">Total Tax:</label><input type="text" class="form-control" id="totalTax" value="0.00" disabled />
+                            </li>
+                            <li class="displayflex">
+                                <label class="withhundredPercent_rightalign">Grand Total:</label><input type="text" class="form-control" id="grandTotal" value="0.00" disabled />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 displayflex attachfilediv">
+                        <label class="attachment">Attachment:</label>
+                        <input type="file" accept=".xlsx,.xls,image/*,.doc, .docx,.pdf" class="form-control attachment" id="invoiceAttachment" />
+                        <label class="">Note: Supported files are - excel,doc,pdf,image </label>
+                    </div>
+                </div>
+                <div class="row preview" style="display:none;">
+                    <a href="#" target="_blank">Click to Preview</a>
+                </div>
+
+            </div>
+            <div class="modal-footer modelfooterbtn">
+                <button type="button" class="btn btn-success" id="createOrUpdateInvoice" data-id="0">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div style="width:90%;margin:15px auto;">
+    <table id="invoiceTable">
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Invoice No
+                </th>
+                <th>
+                    Bill To
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Due Date
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Amount
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+
+    </table>
+</div>
+
+@*Load Data table Css*@
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+@section Scripts{
+    @*Load Data table Js*@
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        //get current date from controller to show in the date time picker
+        var currentDate = "@ViewBag.CurrentDate";
+        //region start -- to show list of invoice data with server side pagination
+        $(document).ready(function () {
+            bindDatatable();
+        });
+        function bindDatatable() {
+            datatable = $('#invoiceTable')
+                .DataTable({
+                    "sAjaxSource": "/Invoice/GetGrubbrrInvoiceList",
+                    "bServerSide": true,
+                    "bPaging":true,
+                    "bProcessing": true,
+                    "bSearchable": true,
+                    "order": [[1, 'asc']],
+                    "language": {
+                        "emptyTable": "No record found.",
+                        "processing":
+                            '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#2a2b2b;"></i><span class="sr-only">Loading...</span> '
+                    },
+                    "columns": [
+                        {
+                            "data": "Index",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "InVoiceNumber",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "CustomerName",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "InvoiceDate",
+                            "autoWidth": true,
+                            "searchable": true
+                        }, {
+                            "data": "DueDate",
+                            "autoWidth": true,
+                            "searchable": true
+                        }, {
+                            "data": "InvoiceStatus",
+                            "autoWidth": true,
+                            "searchable": true
+                        }, {
+                            "data": "GrandTotal",
+                            "autoWidth": true,
+                            "searchable": true
+                        },
+                        {
+                            "data": "Id", "width": "60px", "render": function (data) {
+                                return '<div class="editIcon"><button type="button" class="btn btn-success btn-sm invoiceEdit" data-target="#addInVoiceModal" data-toggle="modal" id=' + data +'><span class="glyphicon glyphicon-edit" id='+data+'></span> Edit</button> <button type="button" class="btn btn-danger btn-sm invoicedelete" id=' + data+'><span class="glyphicon glyphicon-trash"></span> Delete</button></div>';
+                            }
+                        }]
+                });
+        }
+        //region end -- to show list of invoice data with server side pagination
+
+        //Region start - to show add invoice pop up related function
+
+        //to show the invoice creation pop up with default data
+        $(document).on('click', "#showInVoiceModel", function () {
+            $('.preview').hide();
+            //$('.loader').hide();
+            //console.log(date.getDate());
+            $('#createOrUpdateInvoice').attr('data-id', 0);
+            $('select').removeClass("highlight");
+            $('#datetimepicker1').datetimepicker();
+            $('#datetimepicker2').datetimepicker();
+            $('#invoiceDate').val(currentDate);
+            $('#invoiceDueDate').val(currentDate).removeClass("highlight");;
+            $('#invoiceNo').val('').removeClass("highlight");;
+            $('#statusEnum').prop('selectedIndex', 0);
+           $('#invoiceNote').val('');
+            $('#subTotal').val('0.00');
+            $('#totalTax').val('0.00');
+             $('#grandTotal').val('0.00');
+            loadCustomerList();
+            loadProductList(1);
+        });
+
+        //ajax call function get the customer list from database and append that value into drop down
+        function loadCustomerList(customerId) {
+            $.ajax({
+                type: "GET",
+                url: "/Invoice/GetCutomers",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $('#cutomerList').empty();
+                    $('#cutomerList').append("<option value='0' selected> Select Customer</option>");
+                    $.each(response, function (v) {
+                        var val = response[v]
+                        $('#cutomerList').append("<option value='" + val.Id + "'>" + val.FirstName + ' ' + val.LastName + "</option>");
+                    });
+                    if (typeof customerId !== "undefined") {
+                        //alert(customerId);
+                        $('#cutomerList').prop('selectedIndex', customerId);
+                    }
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        //load the product list based on the index - index value append to the suffix of the id of each row and column elements to identify unique one
+        function loadProductList(index,productId,isEditInvoice) {
+            if (index == 1 && (!isEditInvoice)) {
+                $('#addProduct').empty();
+            }
+           // alert("loop_"+index)
+            addProductRow(index);
+            loadProductDropDownList(index, productId);
+        }
+
+        //function to append the product data with select product option
+        function addProductRow(index) {
+            //alert("add prod "+index);
+            $("#addProduct").append('<tr id="remove_' + index + '" data-id="0"><td class="indexvalue">' + index + '</td><td> <select name="product" id="productList_' + index + '" class="product"></select></td><td><textarea placeholder="Description" class="form-control prodDescription" id="prodDescription_' + index + '"></textarea></td><td> <input type="text" id="productPrice_' + index + '" class="form-control productPrice" value= "0.00" min="1"/></td><td><input type="text" id="qty_' + index + '" class="form-control qty" value= "0"  /></td><td> <input type="text" id="taxValue_' + index + '" class="form-control tax" value= "0.00"/></td><td> <input type="text" id="total_' + index + '" class="form-control total" value= "0.00" disabled/></td><td><p  id="removeProdcut_' + index + '" class="btn btn-danger btn-sm removeProduct"><span class="glyphicon glyphicon-remove"></span></p></td></tr>');
+        }
+
+        //after append product table data --  load product drop down data from server
+        function loadProductDropDownList(index, productId) {
+            //alert(index);
+            $.ajax({
+                type: "GET",
+                url: "/Invoice/GetProducts",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    $("#productList_" + index).empty();
+                    $("#productList_" + index).append("<option value='0' selected> Select Product</option>");
+                  
+                    $.each(response, function (v) {
+                        var val = response[v];
+                        $("#productList_" + index).append("<option value='" + val.Id + "'>" + val.ProductName + "</option>");
+                    });
+                    if (typeof productId !== "undefined") {
+                        //alert(productId);
+                        $('#productList_' + index).prop('selectedIndex', productId);
+                        $('#productList_' + index).prop('disabled', true);
+                    }
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+        //add product function to add new row for the product
+        $(document).on('click', "#addProductRow", function () {
+            var tbodyRowLength = $("#addProduct tr").length;
+            loadProductList(tbodyRowLength + 1);
+        });
+
+        //remove click function to remove the added product
+        $(document).on('click', ".removeProduct", function () {
+            var rowId = $(this).parents('tr').attr('id');
+            removeTotalProductRow(rowId);
+        });
+
+        //function to remove already opened data into tabel
+        function removeTotalProductRow(rowId) {
+            var tbodyRowLength = $("#addProduct tr").length;
+            if (tbodyRowLength > 1) {
+                removeProduct(rowId);
+            }
+        }
+
+        //function to remove the product from front end - while remove bill calculation method invoked to calculate the subtotal tax grand total
+        function removeProduct(productRowId) {
+            var row = $('#' + productRowId);
+            var siblings = row.siblings();
+
+            $("#addProduct").find('#' + productRowId).remove();
+            siblings.each(function (index) {
+                $(this).children('td').first().text(index + 1);
+            });
+            totalProductBillCalculation(true);
+
+        }
+
+        //function to calculate final bill details data
+        function totalProductBillCalculation(removeProduct) {
+            //alert(tbodyRowLength);
+            var subTotal = 0.00;
+            var overalltax = 0;
+            var grandtotal = 0.00;
+            var overalltaxAmount = 0.00;
+            if (typeof removeProduct !== "undefined" && removeProduct) {
+                $('#addProduct tr').each(function (index) {
+                    let i = index + 1;
+                    
+                    $(this).attr('id', ("remove_" + i));
+                    $(this).find('td').each(function () {
+                       
+                        if ($(this).find('.product')) {
+                            $(this).find('.product').attr('id', ("productList_" + i));
+                        }
+                        if ($(this).find('.prodDescription')) {
+                            $(this).find('.prodDescription').attr('id', ("prodDescription_" + i));
+                        }
+                        if ($(this).find('.productPrice')) {
+                            $(this).find('.productPrice').attr('id', ("productPrice_" + i));
+                        }
+                        if ($(this).find('.qty')) {
+                            $(this).find('.qty').attr('id', ("qty_" + i));
+                        }
+                        if ($(this).find('.tax')) {
+                            $(this).find('.tax').attr('id', ("taxValue_" + i));
+                        }
+                        if ($(this).find('.total')) {
+                            $(this).find('.total').attr('id', ("total_" + i));
+                        }
+                        if ($(this).find('.product')) {
+                            $(this).find('.removeProduct').attr('id', ("removeProdcut_" + i));
+                        }
+                       
+                    });
+                });
+            }
+            var tbodyRowLength = $("#addProduct tr").length;
+            for (var i = 1; i <= tbodyRowLength; i++) {
+                subTotal += productTotalCalculation(i, true);
+                overalltax += getTaxValue(i);
+            }
+
+            overalltaxAmount = getTotalTaxAmount(overalltax, subTotal);
+            grandtotal = subTotal + overalltaxAmount;
+            $('#subTotal').val(subTotal);
+            $('#totalTax').val(overalltaxAmount);
+            $('#grandTotal').val(grandtotal);
+        }
+
+        //function to calculate individual product total bill based on quantity with out tax
+        function productTotalCalculation(index, isTotalBillCalculation = false) {
+            var qty = parseFloat($('#qty_' + index).val());
+            var productPrice = parseFloat($("#productPrice_" + index).val());
+            var total = productPrice * qty;
+            $('#total_' + index).val(total);
+            if (!isTotalBillCalculation) {
+                totalProductBillCalculation();
+            }
+            return total;
+        }
+
+        //function to get the tax value based on index
+        function getTaxValue(index) {
+            var taxValue = parseFloat($('#taxValue_' + index).val());
+            return taxValue;
+        }
+
+        //function to get the totak tax amount based on tax %
+        function getTotalTaxAmount(taxpercentage, totalamount) {
+            return parseFloat(totalamount) * (parseFloat(taxpercentage) / 100);
+        }
+
+        //function to popolate the product price and description data into product table based on index and selected product
+        function populateDataForSelectedProduct(index, dropDownSelectId) {
+            $.ajax({
+                type: "GET",
+                url: "/Invoice/GetProductById?id=" + dropDownSelectId,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                   // console.log(response);
+                    $('#prodDescription_' + index).val(response.Description);
+                    $('#productPrice_' + index).val(response.Price);
+                    productTotalCalculation(index);
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        }
+
+        //on change funtions
+        //change function to popolate the product price and description data into product table
+        $(document).on('change', '.product', function () {
+            var id = $(this).attr('id');
+            var productIndex = id.split('_')[1];
+            $('#qty_' + productIndex).val(1);
+            var dropDownSelectProductId = $('#' + id).find(":selected").val();
+            populateDataForSelectedProduct(productIndex, dropDownSelectProductId);
+        });
+
+        //change function to recalculate bill related data while change product price
+        $(document).on("input", ".productPrice", function () {
+            var id = $(this).attr('id');
+            var productIndex = id.split('_')[1];
+            productTotalCalculation(productIndex);
+        });
+
+        //change function to recalculate bill related data while change qty
+        $(document).on("input", ".qty", function () {
+            var id = $(this).attr('id');
+            var qtyIndex = id.split('_')[1];
+            productTotalCalculation(qtyIndex);
+        });
+
+        //change function to recalculate bill related data while change tax%
+        $(document).on("input", ".tax", function () {
+            var id = $(this).attr('id');
+            var taxIndex = id.split('_')[1];
+            totalProductBillCalculation(taxIndex);
+        });
+
+
+        //on change functions
+
+        //Region end - to show add invoice pop up related function
+
+        //submit methods
+
+        //click funtion - to cretae invoice data in the form of form data
+        $(document).on('click', "#createOrUpdateInvoice", function () {
+            $('.loader').show();
+            $('select').removeClass("highlight");
+            $('#invoiceDueDate').removeClass("highlight");
+            $('#invoiceNo').removeClass("highlight");
+            $('.product').removeClass("highlight");
+            $('.productPrice').removeClass("highlight");
+            $('.qty').removeClass("highlight");
+            $('.prodDescription').removeClass("highlight");
+            var isvalidationpass = validateInvoiceFields();
+            if (isvalidationpass) {
+                var formdata = new FormData();
+                var data = constructInvoiceData();
+                console.log(JSON.stringify(data));
+                formdata.append('invoiceModel', JSON.stringify(data));
+                formdata.append('invoiceAttachment', $('#invoiceAttachment').get(0).files[0]);
+                console.log(formdata);
+                $.ajax({
+                    type: "Post",
+                    url: "/Invoice/CreateOrUpdateInvoiceViewModel",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: formdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        //alert(response);
+                        $('.loader').hide();
+                        $("#addInVoiceModal").hide();
+                        location.reload();
+                    },
+                    failure: function (response) {
+                        alert(response.d);
+
+                    }
+                });
+            }
+            else {
+                $('.loader').hide();
+            }
+        });
+
+
+        function validateInvoiceFields() {
+            var validationPass = true;
+            if ($('#cutomerList').val() == 0) {
+                validationPass = false;
+                $("#cutomerList").addClass("highlight");
+            }
+            if ($('#invoiceNo').val().length == 0) {
+                validationPass = false;
+                $("#invoiceNo").addClass("highlight");
+            }
+            if (!CheckDueDateGreaterthanInvoiceDate()) {
+                validationPass = false;
+                $("#invoiceDueDate").addClass("highlight");
+            }
+            if (!ProductListCheck()) {
+                validationPass = false;
+            }
+
+            return validationPass;
+        }
+
+        function ProductListCheck() {
+            var isnotvalid = true;
+            $('#addProduct').each(function () {
+                $(this).find('tr').each(function (row) {
+                    $(this).find('td').each(function (column) {
+                        if (isnotvalid) {
+                            isnotvalid = validProductistTableParameterCheck(isnotvalid, (row+1));
+                        }
+                    });
+                });
+            });
+            return isnotvalid;
+        }
+
+        function validProductistTableParameterCheck(isnotvalid,row){
+            if ($('#productList_' + row).val() == 0) {
+                isnotvalid = false;
+                $('#productList_' + row).addClass("highlight");
+            }
+            else if ($('#prodDescription_' + row).val() == 0) {
+                isnotvalid = false;
+                $('#prodDescription_' + row).addClass("highlight");
+            }
+            else if ($('#productPrice_' + row).val() == 0) {
+                isnotvalid = false;
+                $('#productPrice_' + row).addClass("highlight");
+            }
+            else if ($('#qty_' + row).val() == 0) {
+                isnotvalid = false;
+                $('#qty_' + row).addClass("highlight");
+            }
+            else if ($('#total_' + row).val() ==0) {
+                isnotvalid = false;
+                $('#total_' + row).addClass("highlight");
+            }
+            return isnotvalid;
+        }
+        function CheckDueDateGreaterthanInvoiceDate() {
+            var dateGreater = false;
+            //alert($('#invoiceDate').val());
+            //alert($('#invoiceDueDate').val());
+            var invoiceDate = Date.parse($('#invoiceDate').val());
+            var dueDate = Date.parse($('#invoiceDueDate').val());
+           // alert(invoiceDate);
+            if (dueDate > invoiceDate) {
+                dateGreater = true;
+            }
+            return dateGreater;
+        }
+
+      
+        //construct invoice creation model to send the server
+        function constructInvoiceData() {
+            var InvoiceViewModel = {};
+            InvoiceViewModel.id = $('#createOrUpdateInvoice').attr('data-id');
+            InvoiceViewModel.customerId = $('#cutomerList').val();
+            InvoiceViewModel.invoiceNumber = $('#invoiceNo').val();
+            InvoiceViewModel.invoiceDate = $('#invoiceDate').val();
+            InvoiceViewModel.invoiceDueDate = $('#invoiceDueDate').val();
+            InvoiceViewModel.status = $('#statusEnum').val();
+            InvoiceViewModel.invoiceNote = $('#invoiceNote').val();
+            InvoiceViewModel.subTotal = $('#subTotal').val();
+            InvoiceViewModel.taxAmount = $('#totalTax').val();
+            InvoiceViewModel.grandTotal = $('#grandTotal').val();
+            InvoiceViewModel.productList = [];
+            var tbodyRowLength = $("#addProduct tr").length;
+            for (var i = 1; i <= tbodyRowLength; i++) {
+                var ProductViewModel = {};
+                ProductViewModel.id = $('#remove_'+i).attr('data-id');
+                ProductViewModel.productId = $('#productList_' + i).val();
+                ProductViewModel.description = $('#prodDescription_' + i).val();
+                ProductViewModel.productPrice = $('#productPrice_' + i).val();
+                ProductViewModel.quantity = $('#qty_' + i).val();
+                ProductViewModel.tax = $('#taxValue_' + i).val();
+                ProductViewModel.totalAmount = $('#total_' + i).val();
+                InvoiceViewModel.productList.push(ProductViewModel);
+            }
+            return InvoiceViewModel;
+        }
+
+        $(document).on('click', '.invoicedelete', function () {
+            var id = $(this).attr('id');
+            $.ajax({
+                type: "GET",
+                url: "/invoice/DeleteInvoice?id="+id,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (response) {
+                    location.reload();
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+        $(document).on('click', '.invoiceEdit', function () {
+            var id = $(this).attr('id');
+           
+            //removeTotalProductRow(rowId);
+            //alert(id);
+            $.ajax({
+                type: "GET",
+                url: "/invoice/GetInvoiceDataByIdToEdit?id=" + id,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (response) {
+                    loadCustomerList(response.customerId);
+                    $('#invoiceDate').val(response.invoiceDate);
+                    $('#invoiceDueDate').val(response.invoiceDueDate);
+                    $('#invoiceNo').val(response.invoiceNumber);
+                    $('#statusEnum').prop('selectedIndex', response.status);
+                    $('#invoiceNote').val(response.invoiceNote);
+                    $('#subTotal').val(response.subTotal);
+                    $('#totalTax').val(response.taxAmount);
+                    $('#grandTotal').val(response.grandTotal);
+                    $('#createOrUpdateInvoice').attr('data-id', response.id);
+                    if (response.invoiceAttachment != '' && response.invoiceAttachment!=null) {
+                        $('.preview').show();
+                        $(".preview").children().attr("href", response.invoiceAttachment)
+
+                    }
+                    $('#addProduct').empty();
+                    for(var item = 0; item < response.ProductList.length; item++) {
+                            var index = item + 1;
+                            loadProductList(index, response.ProductList[item].productId,true);
+                            //console.log(item);
+                            $('#remove_' + index).attr('data-id', response.ProductList[item].id);
+                            $('#prodDescription_' + index).val(response.ProductList[item].description);
+                            $('#productPrice_' + index).val(response.ProductList[item].productPrice);
+                            $('#qty_' + index).val(response.ProductList[item].quantity);
+                            $('#taxValue_' + index).val(response.ProductList[item].tax);
+                            $('#total_' + index).val(response.ProductList[item].totalAmount);
+                    }
+
+                },
+                failure: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+
+    </script>
+}
+
+
